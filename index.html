@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>calculadora</title>
+
+	<style>
+
+	body{
+		font-family: sans-serif;
+	}
+
+	#calculator{
+		width: 200px;
+        background-image: linear-gradient(#b7b7b7, #9c9c9c);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,.8);
+        margin: 15px auto;
+        
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 5px;
+        grid-template-rows: auto repeat(5, 40px);
+	}
+		
+
+	button{
+		padding: .25em;
+	}
+
+	#display{
+		padding: 10px;
+        font-size: 1.4em;
+        text-align: right;
+        background-image: linear-gradient(#c5c5c5, #e0e0e0);
+        box-shadow: inset 3px 2px 0 white;
+        margin-bottom: 15px;
+        
+        grid-column: 1 / -1;
+	}
+
+	.mais{
+		background-color: #adadad;
+        grid-row: 5 / 7;
+        grid-column: 4 / 5;
+        
+	}
+
+	.zero{
+		background-color: #adadad;
+        grid-column: 1 / 3;
+	}
+
+	</style>
+
+</head>
+<body>
+
+	<div id="calculator">
+		<div id="display">0</div>
+		
+		<button onclick="limpar()">AC</button> 
+		<button onclick="obterPorcento()">%</button> 
+		<button onclick="iniciarCalculo('*')">x</button> 
+		<button onclick="iniciarCalculo('/')">/</button> 
+		<button onclick="incluirDigito('7')">7</button> 
+		<button onclick="incluirDigito('8')">8</button> 
+		<button onclick="incluirDigito('9')">9</button> 
+		<button onclick="finalizarCalculo()">=</button>
+		<button onclick="incluirDigito('4')">4</button> 
+		<button onclick="incluirDigito('5')">5</button> 
+		<button onclick="incluirDigito('6')">6</button>  
+		<button onclick="iniciarCalculo('-')">-</button> 
+		<button onclick="incluirDigito('1')">1</button> 
+		<button onclick="incluirDigito('2')">2</button> 
+		<button onclick="incluirDigito('3')">3</button> 
+		<button onclick="iniciarCalculo('+')" class="mais">+</button>
+        <button class="zero" onclick="incluirDigito('0')">0</button> 
+        <button onclick="incluirPonto()">,</button> 
+		
+	</div>
+   <script>
+
+       //variaveis globais
+	   let n1 = '0'
+	   let operacao = null
+	   let n2 = ''
+
+	   function incluirDigito(digito){
+		      //arrumando o bug, criando condição para limpar os numeros existentes apos o sinal =
+			  if(n2 && operacao && clicadoEmIgual){ //se for verdade eles vai receber false
+				clicadoEmIgual = false
+				limpar()
+				n1 = digito
+				mostrarNodisplay(n1)
+				return //para parar todo os outros codigos
+			  }
+			if(operacao !== null){
+				n2 = n2 + digito
+				mostrarNodisplay(n2)
+
+				console.log(n2)
+
+			}else{
+
+		     if(n1 === '0'){
+				n1 = digito
+			  }else{
+				n1 += digito
+			  }
+			  //console.log(n1)
+		//chamr função que vai mostrar no display
+		mostrarNodisplay(n1) 
+
+			} 
+	   }
+
+	   //criando a função que vai calcular
+	   function calcular(){
+		   var nCalculado = 0
+		   var _n1 = parseFloat(n1)
+		   var _n2 = parseFloat(n2)
+
+		   switch(operacao){
+			case '+':
+				nCalculado = _n1 + _n2
+				break
+			case '-':
+				nCalculado = _n1 - _n2
+				break
+			case '*':
+				nCalculado = _n1 * _n2
+				break
+			case '/':
+				nCalculado = _n1 / _n2
+				break
+		   }
+		   return nCalculado
+	   }
+	   //criando a função finalizar calculo '='
+	   //criar uma variavel para parar de calculo quando apertar em outra operação
+	   var clicadoEmIgual = false
+	   function finalizarCalculo(){
+		       clicadoEmIgual = true // quando clicar no igual isso diz que foi clicado
+		        var resultado = calcular()
+				n1 = resultado
+				mostrarNodisplay(n1)
+				console.log('n1', n1, 'operação', operacao, 'n2', n2)
+	   }
+
+	   //função que inicia o calculo
+	   function iniciarCalculo(simbolo){
+			//criar condição para avisar que o igual ja foi clicado
+			//então reatribuir o false para ele aceita outro simbolo
+			
+					if(clicadoEmIgual){
+						clicadoEmIgual = false
+						n2 = ''
+					}
+
+
+             //condicional para reatribuir e tambem mostrar na tela o calculo
+		if(operacao === null || n2 === ''){
+			operacao = simbolo
+		}else{
+			//ja tem n1, operacao e n2
+			var resultado = calcular() //chamando calculo
+			n1 = resultado // n1 recebe o resultado do calculo
+			operacao = simbolo 
+			n2 = '' 
+			mostrarNodisplay(n1)
+		}
+		    
+
+			console.log(n1, operacao, n2)
+	   }
+
+	   //criar a função que vai incluir ponto para numeros decimais
+	   function incluirPonto(){
+		     if(operacao && n2 === ''){
+				n2 = '0.'
+			 }else if (operacao && n2){
+				n2 =  n2 + '.'
+			 }else{
+				n1 = n1 + '.'
+			 }
+	   }
+	   //CRIAR  A FUNÇÃO LIMPAR
+	   function limpar(){   
+				n1 = '0'
+				operacao = null
+				n2 = ''
+				mostrarNodisplay(n1)
+
+	   }
+	  //criando a função obterporcento
+	  function obterPorcento(){
+		 if(!n2){
+			//n2 = ''
+			limpar()
+			mostrarNodisplay(n1)
+		 }else{
+			if(operacao === '+' || operacao === '-'){
+				var porcento = n1 * n2 / 100
+			}else{
+				var porcento = n2 /100
+			}
+		 }  
+		   n2 = porcento
+		   mostrarNodisplay(n2)
+	  }
+
+	   //função que vai mostrar no display
+	   function mostrarNodisplay(valor){
+
+		var display = document.querySelector('#display')
+		 display.innerHTML = valor
+	   }
+	  
+
+   </script>
+
+
+
+
+
+
+
+<!--	<img src="https://static.webshopapp.com/shops/038765/files/063260238/geeek-bamboo-wooden-calculator-calculator.jpg" style="width: 250px">-->
+
+</body>
+</html>
